@@ -47,3 +47,7 @@
 .footer a:not(.footer__link-item) {
   text-decoration: underline;
 }
+
+.footer__links {
+  margin-bottom: 3rem;
+}

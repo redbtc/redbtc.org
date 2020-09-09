@@ -49,7 +49,7 @@ module.exports = {
           title: "Docs",
           items: [
             {
-              label: "Style Guide",
+              label: "Getting Started",
               to: "docs/",
             },
             {
@@ -59,32 +59,41 @@ module.exports = {
           ],
         },
         {
-          title: "Community",
+          title: "Flows",
           items: [
-            // {
-            //   label: "Stack Overflow",
-            //   href: "https://stackoverflow.com/questions/tagged/docusaurus",
-            // },
-            // {
-            //   label: "Discord",
-            //   href: "https://discordapp.com/invite/docusaurus",
-            // },
             {
-              label: "Twitter",
-              href: "https://twitter.com/RedBtcOrg",
+              label: "About Flows",
+              to: "flows/",
+            },
+            {
+              label: "Basic Actions",
+              to: "flows/basic/",
+            },
+          ],
+        },
+        {
+          title: "GitHub Repos",
+          items: [
+            {
+              label: "BTCPay Node",
+              href: "https://github.com/alexk111/node-red-contrib-btcpay",
+            },
+            {
+              label: "This Website",
+              href: "https://github.com/alexk111/redbtc.org",
             },
           ],
         },
         {
           title: "More",
           items: [
-            // {
-            //   label: "Blog",
-            //   to: "blog",
-            // },
             {
-              label: "GitHub",
+              label: "Donate 💝",
               href: "https://github.com/alexk111/node-red-contrib-btcpay",
+            },
+            {
+              label: "Twitter",
+              href: "https://twitter.com/RedBtcOrg",
             },
           ],
         },
