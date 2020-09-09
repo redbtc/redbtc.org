@@ -26,7 +26,14 @@
 }
 
 .hero {
-  background-color: var(--ifm-color-gray-100);
+  background-color: #fff;
+  background-image: linear-gradient(
+      rgba(245, 245, 245, 0.65) 0.1em,
+      transparent 0.1em
+    ),
+    linear-gradient(90deg, rgba(245, 245, 245, 0.65) 0.1em, transparent 0.1em);
+  background-size: 10px 10px;
+  background-position: 50% -1px;
   color: var(--ifm-color-gray-900);
 }
 

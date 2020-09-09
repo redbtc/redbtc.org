@@ -82,7 +82,7 @@ function Home() {
               BTCPay Server
             </a>{" "}
             with online services, APIs and hardware devices, and develop apps on
-            top of it, visually using{" "}
+            top of it, visually with{" "}
             <a
               href="https://nodered.org/"
               target="_blank"

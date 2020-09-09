@@ -26,6 +26,7 @@
 }
 
 .getStarted {
+  border-width: 4px;
   margin-top: 2rem;
   --ifm-button-size-multiplier: 1.75;
 }
