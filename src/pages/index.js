@@ -1,6 +1,5 @@
 import React from "react";
 import clsx from "clsx";
-import github from "prism-react-renderer/themes/github";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
@@ -9,32 +8,30 @@ import styles from "./styles.module.css";
 
 const features = [
   {
-    title: "Easy to Use",
-    imageUrl: "img/undraw_docusaurus_mountain.svg",
+    title: "Visual Tool",
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Automate your Bitcoin-related routines and build applications visually,
+        by connecting nodes in flows.
       </>
     ),
   },
   {
-    title: "Focus on What Matters",
-    imageUrl: "img/undraw_docusaurus_tree.svg",
+    title: "Node-RED Ecosystem",
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Integrate your BTCPay Server instance with the Node-RED ecosystem
+        comprising of more than 2,000 community-built nodes for various online
+        services, databases and IoT devices.
       </>
     ),
   },
   {
-    title: "Powered by React",
-    imageUrl: "img/undraw_docusaurus_react.svg",
+    title: "Example Flows",
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Ready-made example flows would help you to start making your BTCPay
+        Server integrations immediately.
       </>
     ),
   },
@@ -124,9 +121,6 @@ function Home() {
             </div>
           </section>
         )}
-        <p className="text--center text--primary">
-          (Screens of Node-RED with BTCPay) instead of Features?
-        </p>
       </main>
     </Layout>
   );
