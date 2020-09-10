@@ -54,23 +54,8 @@ module.exports = {
               target: "_self",
             },
             {
-              label: "Second Doc",
-              to: "docs/doc2/",
-              target: "_self",
-            },
-          ],
-        },
-        {
-          title: "Flows",
-          items: [
-            {
-              label: "About Flows",
+              label: "Example Flows",
               to: "flows/",
-              target: "_self",
-            },
-            {
-              label: "Basic Actions",
-              to: "flows/basic/",
               target: "_self",
             },
           ],
@@ -83,7 +68,7 @@ module.exports = {
               href: "https://github.com/alexk111/node-red-contrib-btcpay",
             },
             {
-              label: "This Website",
+              label: "BtcRed.org",
               href: "https://github.com/alexk111/redbtc.org",
             },
           ],
