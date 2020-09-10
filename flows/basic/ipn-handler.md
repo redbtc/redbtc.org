@@ -7,7 +7,7 @@ hide_table_of_contents: true
 
 This flow implements an IPN handler. It checks if the invoice status is either "confirmed" or "complete" and outputs the invoice data to Debug window. As the incoming data cannot be trusted, it first fetches the invoice data via API.
 
-![](./assets/ipn-handler.png)
+![IPN Handler Flow](./assets/ipn-handler.png)
 
 ## Node-RED Flow
 
