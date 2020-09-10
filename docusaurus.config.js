@@ -51,10 +51,12 @@ module.exports = {
             {
               label: "Getting Started",
               to: "docs/",
+              target: "_self",
             },
             {
               label: "Second Doc",
               to: "docs/doc2/",
+              target: "_self",
             },
           ],
         },
@@ -64,10 +66,12 @@ module.exports = {
             {
               label: "About Flows",
               to: "flows/",
+              target: "_self",
             },
             {
               label: "Basic Actions",
               to: "flows/basic/",
+              target: "_self",
             },
           ],
         },
@@ -88,8 +92,7 @@ module.exports = {
           title: "More",
           items: [
             {
-              label: "Donate 💝",
-              href: "https://github.com/alexk111/node-red-contrib-btcpay",
+              html: `<a href="https://github.com/alexk111/node-red-contrib-btcpay" target="_blank" rel="noopener noreferrer" class="footer__link-item">Donate<span class="link-icon">💝</span></a>`,
             },
             {
               label: "Twitter",

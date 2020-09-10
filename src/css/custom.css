@@ -52,6 +52,11 @@
   margin-bottom: 3rem;
 }
 
+.footer__link-item .link-icon {
+  display: inline-block;
+  padding-left: 6px;
+}
+
 main .copyButton_node_modules-\@docusaurus-theme-classic-lib-theme-CodeBlock- {
   right: calc(var(--ifm-pre-padding) * 1.5);
 }
