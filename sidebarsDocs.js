@@ -4,7 +4,12 @@ module.exports = {
       type: "category",
       label: "Getting Started",
       collapsed: false,
-      items: ["installation"],
+      items: ["installation", "configuration", "making-requests"],
+    },
+    {
+      type: "link",
+      href: "/flows",
+      label: "Example Flows",
     },
   ],
 };
