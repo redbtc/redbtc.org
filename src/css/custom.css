@@ -59,6 +59,8 @@
 
 main .copyButton_node_modules-\@docusaurus-theme-classic-lib-theme-CodeBlock- {
   right: calc(var(--ifm-pre-padding) * 1.5);
+  visibility: visible;
+  opacity: 1;
 }
 
 main .prism-code.language-json {
