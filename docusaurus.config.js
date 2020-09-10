@@ -130,6 +130,7 @@ module.exports = {
       {
         id: "flows",
         path: "flows",
+        docLayoutComponent: require.resolve("./src/components/FlowsDocPage"),
         editUrl: "https://github.com/alexk111/redbtc.org/edit/master/",
         routeBasePath: "flows",
         sidebarPath: require.resolve("./sidebarsFlows.js"),

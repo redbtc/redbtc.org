@@ -57,12 +57,18 @@
   padding-left: 6px;
 }
 
-main .copyButton_node_modules-\@docusaurus-theme-classic-lib-theme-CodeBlock- {
+.flows-page
+  main
+  .copyButton_node_modules-\@docusaurus-theme-classic-lib-theme-CodeBlock- {
   right: calc(var(--ifm-pre-padding) * 1.5);
   visibility: visible;
   opacity: 1;
 }
 
-main .prism-code.language-json {
+.flows-page main .prism-code {
+  overflow-y: scroll;
+}
+
+.flows-page main .prism-code.language-json {
   max-height: 200px;
 }
