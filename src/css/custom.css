@@ -51,3 +51,11 @@
 .footer__links {
   margin-bottom: 3rem;
 }
+
+main .copyButton_node_modules-\@docusaurus-theme-classic-lib-theme-CodeBlock- {
+  right: calc(var(--ifm-pre-padding) * 1.5);
+}
+
+main .prism-code.language-json {
+  max-height: 200px;
+}
