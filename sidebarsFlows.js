@@ -2,12 +2,12 @@ module.exports = {
   flows: [
     {
       type: "doc",
-      id: "about-flows",
+      id: "flows",
     },
     {
       type: "category",
-      label: "Basic Actions",
-      items: ["basic/invoice-creator", "basic/ipn-handler"],
+      label: "Starters",
+      items: ["starters/invoice-creator", "starters/ipn-handler"],
     },
   ],
 };
