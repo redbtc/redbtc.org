@@ -26,20 +26,15 @@ module.exports = {
           to: "docs/",
           activeBasePath: "docs",
           label: "Docs",
-          position: "left",
+          position: "right",
         },
         {
           to: "flows/",
           activeBasePath: "flows",
           label: "Flows",
-          position: "left",
-        },
-        // { to: "blog", label: "Blog", position: "left" },
-        {
-          href: "https://github.com/alexk111/node-red-contrib-btcpay",
-          label: "GitHub",
           position: "right",
         },
+        // { to: "blog", label: "Blog", position: "left" }
       ],
     },
     footer: {
