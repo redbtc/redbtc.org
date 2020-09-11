@@ -10,8 +10,8 @@ description: Example BTCPay flows and how to import them into Node-RED
 For convenience, the flows are divided by 3 categories:
 
 - [Starters](./starters/invoice-creator) - helpful flows to start building your integrations with
-- Integrations _(coming soon)_ - simple "If This Then That"-like flows
-- Applications _(coming soon)_ - more complex flows with conditional logic and states
+- Integrations _(coming soon)_ - simple IFTTT-like flows
+- Applications _(coming soon)_ - more complex flows with calculations, conditional logic and states
 
 ## Importing Flows To Node-RED
 
