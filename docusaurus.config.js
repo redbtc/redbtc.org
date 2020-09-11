@@ -15,6 +15,7 @@ module.exports = {
     //   theme: require("prism-react-renderer/themes/github"),
     //   // darkTheme: require('prism-react-renderer/themes/dracula'),
     // },
+    image: "img/redbtc-og.png",
     navbar: {
       title: "Red BTC",
       logo: {
