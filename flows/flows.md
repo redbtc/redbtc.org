@@ -4,6 +4,7 @@ title: Flows
 sidebar_label: Flows
 slug: /
 hide_table_of_contents: true
+description: Example BTCPay flows and how to import them into Node-RED
 ---
 
 For convenience, the flows are divided by 3 categories:

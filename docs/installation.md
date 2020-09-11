@@ -2,6 +2,7 @@
 id: installation
 title: Installation
 sidebar_label: Installation
+description: Installing BTCPay Server, Node-RED and BTCPay Nodes
 slug: /
 ---
 

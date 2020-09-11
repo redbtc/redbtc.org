@@ -5,7 +5,9 @@ sidebar_label: Creating Invoices
 hide_table_of_contents: true
 ---
 
-This flow enables you to create an invoice with params specified in the "Invoice params" node by clicking the inject button. The "Invoice URL" node outputs the url of the new invoice to Debug window.
+This flow enables you to create an invoice with params specified in the "Invoice params" node by clicking the inject button.
+
+The "Invoice URL" node outputs the url of the new invoice to Debug window.
 
 ![Invoice Creator Flow](./assets/invoice-creator.png)
 

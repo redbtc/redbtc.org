@@ -58,8 +58,8 @@ function Home() {
 
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
+      title={siteConfig.tagline}
+      description="Integrate BTCPay Server with online services, APIs and hardware devices, and develop apps on top of it, visually with Node-RED and BTCPay Node"
     >
       <header className={clsx("hero hero--primary", styles.heroBanner)}>
         <div className="container">

@@ -2,6 +2,7 @@
 id: configuration
 title: Configuration
 sidebar_label: Configuration
+description: Creating a BTCPay store and pairing a BTCPay client in Node-RED with it
 ---
 
 You first need to create a new BTCPay store:
