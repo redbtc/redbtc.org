@@ -72,7 +72,7 @@ module.exports = {
           title: "More",
           items: [
             {
-              html: `<a href="https://github.com/alexk111/node-red-contrib-btcpay" target="_blank" rel="noopener noreferrer" class="footer__link-item">Donate<span class="link-icon">💝</span></a>`,
+              html: `<a href="https://donate.alexkaul.com/redbtc" target="_blank" rel="noopener noreferrer" class="footer__link-item">Donate<span class="link-icon">💝</span></a>`,
             },
             {
               label: "Twitter",
