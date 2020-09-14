@@ -34,7 +34,6 @@ module.exports = {
           label: "Flows",
           position: "right",
         },
-        // { to: "blog", label: "Blog", position: "left" }
       ],
     },
     footer: {
@@ -93,11 +92,6 @@ module.exports = {
           // Please change this to your repo.
           editUrl: "https://github.com/alexk111/redbtc.org/edit/master/",
         },
-        // blog: {
-        //   showReadingTime: true,
-        //   // Please change this to your repo.
-        //   editUrl: "https://github.com/alexk111/redbtc.org/edit/master/blog/",
-        // },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
