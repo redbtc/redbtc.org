@@ -6,36 +6,38 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import styles from "./styles.module.css";
 
-const features = [
-  {
-    title: "Visual Tool",
-    description: (
-      <>
-        Automate your Bitcoin-related routines and build applications visually,
-        by connecting nodes in flows.
-      </>
-    ),
-  },
-  {
-    title: "Node-RED Ecosystem",
-    description: (
-      <>
-        Integrate your BTCPay Server instance with the Node-RED ecosystem
-        comprising of more than 2,000 community-built nodes for various online
-        services, databases and IoT devices.
-      </>
-    ),
-  },
-  {
-    title: "Example Flows",
-    description: (
-      <>
-        Ready-made example flows would help you to start making your BTCPay
-        Server integrations immediately.
-      </>
-    ),
-  },
-];
+function getFeatures() {
+  return [
+    {
+      title: "Visual Tool",
+      description: (
+        <>
+          Automate your Bitcoin-related routines and build applications
+          visually, by connecting nodes in flows.
+        </>
+      ),
+    },
+    {
+      title: "Node-RED Ecosystem",
+      description: (
+        <>
+          Integrate your BTCPay Server instance with the Node-RED ecosystem
+          comprising of more than 2,000 community-built nodes for various online
+          services, databases and IoT devices.
+        </>
+      ),
+    },
+    {
+      title: "Example Flows",
+      description: (
+        <>
+          <Link to={useBaseUrl("flows/")}>Ready-made example flows</Link> would
+          help you to start making your BTCPay Server integrations immediately.
+        </>
+      ),
+    },
+  ];
+}
 
 function Feature({ imageUrl, title, description }) {
   const imgUrl = useBaseUrl(imageUrl);
@@ -55,6 +57,8 @@ function Feature({ imageUrl, title, description }) {
 function Home() {
   const context = useDocusaurusContext();
   const { siteConfig = {} } = context;
+
+  const features = getFeatures();
 
   return (
     <Layout
