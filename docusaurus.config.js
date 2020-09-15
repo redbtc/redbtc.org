@@ -1,7 +1,7 @@
 module.exports = {
   title: "Red BTC",
   tagline: "Integrate BTCPay Server with anything",
-  url: "https://redbtc.com",
+  url: "https://redbtc.org",
   baseUrl: "/",
   onBrokenLinks: "throw",
   favicon: "img/favicon.ico",
