@@ -11,7 +11,7 @@ For convenience, the flows are divided by 3 categories:
 
 - [Starters](./starters/invoice-creator) - helpful flows to start building your integrations with
 - Integrations _(coming soon)_ - simple IFTTT-like flows
-- Applications _(coming soon)_ - more complex flows with calculations, conditional logic and states
+- [Applications](./applications/telegram-gatekeeper) - more complex flows with calculations, conditional logic and states
 
 ## Importing Flows To Node-RED
 
