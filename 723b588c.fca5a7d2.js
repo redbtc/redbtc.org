@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[7],{64:function(e,n,t){"use strict";t.r(n),t.d(n,"default",(function(){return u}));var a=t(0),c=t.n(a),r=t(47);function u(e){return c.a.createElement("div",{className:"flows-page"},c.a.createElement(r.default,e))}}}]);
