@@ -9,7 +9,7 @@ This flow creates a Telegram Gatekeeper bot which lets the user join a channel/g
 
 _Note_: The invite link to channel/group can be replaced with any other link.
 
-![Invoice Creator Flow](./assets/telegram-gatekeeper.png)
+![Telegram Gatekeeper Flow](./assets/telegram-gatekeeper.png)
 
 ## Process
 
@@ -40,7 +40,7 @@ This flow requires the following nodes to be installed on your Node-RED:
 ## Configuration & Setup
 
 1. Import the Node-RED Flow - it will add a new tab called "TG - Gatekeeper"
-2. In the "IPN Handler" section (bottom-left corner) of the tab double-click the initial node and specify URL of the webhook to get notifications about paid invoices from your BTCPay Server
+2. In the "IPN Handler" section (bottom-left corner) of the tab double-click the initial node and specify URL for receiving POST notifications from BTCPay Server
 3. Open the "Configuration nodes" panel in Node-RED (via tabs on the right panel or `ctrl-g c` shortcut) and configure the config-nodes:
    - **btcpay-api-config** - create a store on your BTCPay Server and pair the node with it ([read more](https://redbtc.org/docs/configuration/))
    - **sqlitedb** - set a path to a SQLite DB file where the app will store the data
