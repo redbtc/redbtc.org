@@ -11,6 +11,11 @@ module.exports = {
     },
     {
       type: "category",
+      label: "Integrations",
+      items: ["integrations/telegram-notifications"],
+    },
+    {
+      type: "category",
       label: "Applications",
       items: ["applications/telegram-gatekeeper"],
     },
