@@ -62,7 +62,7 @@ module.exports = {
               href: "https://github.com/alexk111/node-red-contrib-btcpay",
             },
             {
-              label: "BtcRed.org",
+              label: "RedBtc.org",
               href: "https://github.com/alexk111/redbtc.org",
             },
           ],
