@@ -58,12 +58,12 @@ module.exports = {
           title: "GitHub Repos",
           items: [
             {
-              label: "BTCPay Node",
+              label: "BTCPay Nodes",
               href: "https://github.com/redbtc/node-red-contrib-btcpay",
             },
             {
-              label: "RedBtc.org",
-              href: "https://github.com/redbtc/redbtc.org",
+              label: "Red BTC",
+              href: "https://github.com/redbtc",
             },
           ],
         },

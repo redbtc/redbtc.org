@@ -63,14 +63,14 @@ function Home() {
   return (
     <Layout
       title={siteConfig.tagline}
-      description="Integrate BTCPay Server with online services, APIs and hardware devices, and develop apps on top of it, visually with Node-RED and BTCPay Node"
+      description="Integrate BTCPay Server with online services, APIs and hardware devices, and develop apps on top of it, visually with Node-RED and BTCPay Nodes"
     >
       <header className={clsx("hero hero--primary", styles.heroBanner)}>
         <div className="container">
           <img
             className={styles.heroImage}
             src="img/logo-nodes.svg"
-            alt="BTCPay node"
+            alt="Red BTC logo"
           />
           <h1 className="hero__title">{siteConfig.title}</h1>
           <p className="hero__subtitle">
@@ -97,7 +97,7 @@ function Home() {
               target="_blank"
               rel="noreferrer noopener"
             >
-              BTCPay Node
+              BTCPay Nodes
             </a>
           </p>
           <div className={styles.buttons}>
