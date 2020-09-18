@@ -57,1072 +57,1375 @@ This flow requires the following nodes to be installed on your Node-RED:
 
 ```json
 [
-  {
-    "id": "8feab169.61ec9",
-    "type": "tab",
-    "label": "TG - Gatekeeper",
-    "disabled": false,
-    "info": ""
-  },
-  {
-    "id": "ed0922fe.1650e",
-    "type": "sqlite",
-    "z": "8feab169.61ec9",
-    "mydb": "d0934ac4.e0be88",
-    "sqlquery": "batch",
-    "sql": "",
-    "name": "Exec query",
-    "x": 570,
-    "y": 260,
-    "wires": [[]]
-  },
-  {
-    "id": "dc74fbad.092ec8",
-    "type": "template",
-    "z": "8feab169.61ec9",
-    "name": "SQL Query = Setup Tables",
-    "field": "topic",
-    "fieldType": "msg",
-    "format": "sql",
-    "syntax": "plain",
-    "template": "CREATE TABLE IF NOT EXISTS users_invoices (\n    invoice_id TEXT PRIMARY KEY, /* btcpay invoice id */\n    user_id INTEGER NOT NULL, /* telegram user id */\n    msg_id INTEGER NOT NULL, /* id of telegram msg with the invoice */\n    created_at INTEGER NOT NULL, /* creation timestamp */\n    paid INTEGER NOT NULL /* 0 - not paid; 1 - paid */\n);\n\nCREATE INDEX IF NOT EXISTS idx_users_invoices_user_created\n    ON users_invoices (user_id, created_at);\n\nCREATE INDEX IF NOT EXISTS idx_users_invoices_user_paid\n    ON users_invoices (user_id, paid);\n",
-    "output": "str",
-    "x": 520,
-    "y": 220,
-    "wires": [["ed0922fe.1650e"]]
-  },
-  {
-    "id": "75f7d489.9e32cc",
-    "type": "inject",
-    "z": "8feab169.61ec9",
-    "name": "Setup App",
-    "props": [{ "p": "payload" }, { "p": "topic", "vt": "str" }],
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
-    "x": 200,
-    "y": 220,
-    "wires": [["dc74fbad.092ec8"]]
-  },
-  {
-    "id": "639b3b94.cce594",
-    "type": "inject",
-    "z": "8feab169.61ec9",
-    "name": "Auto-exec on startup",
-    "props": [{ "p": "payload" }, { "p": "topic", "vt": "str" }],
-    "repeat": "",
-    "crontab": "",
-    "once": true,
-    "onceDelay": "0",
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
-    "x": 240,
-    "y": 180,
-    "wires": [["5f7f5a92.c7fde4"]]
-  },
-  {
-    "id": "5f7f5a92.c7fde4",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "🔨 App Settings",
-    "rules": [
-      { "t": "set", "p": "price", "pt": "flow", "to": "0.01", "tot": "num" },
-      { "t": "set", "p": "currency", "pt": "flow", "to": "BTC", "tot": "str" },
-      {
-        "t": "set",
-        "p": "tgInviteLink",
-        "pt": "flow",
-        "to": "https://t.me/joinchat/AAAAA",
-        "tot": "str"
-      },
-      {
-        "t": "set",
-        "p": "webhookUrl",
-        "pt": "flow",
-        "to": "https://nodered.yoursite.com/btcpay-ipn/",
-        "tot": "str"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 480,
-    "y": 180,
-    "wires": [[]]
-  },
-  {
-    "id": "97331212.7f8f5",
-    "type": "telegram sender",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "bot": "ac4e405.e7abcc",
-    "x": 2410,
-    "y": 660,
-    "wires": [[]]
-  },
-  {
-    "id": "95bcdaff.8567d8",
-    "type": "function",
-    "z": "8feab169.61ec9",
-    "name": "keyboard = Buy",
-    "func": "var opts = {\n  reply_markup: JSON.stringify({\n    \"inline_keyboard\": [\n        [\n            {\n                \"text\": \"Yes, buy with Bitcoin\",\n                \"callback_data\": \"Buy\"            \n            }\n        ]\n    ]\n  })\n};\nmsg.payload.options = opts;\n\nreturn msg;\n",
-    "outputs": "1",
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "x": 500,
-    "y": 600,
-    "wires": [["e2b5dd69.a0337"]]
-  },
-  {
-    "id": "ef375571.8749c8",
-    "type": "function",
-    "z": "8feab169.61ec9",
-    "name": "keyboard = invoice link",
-    "func": "const reply_markup = JSON.stringify({\n    \"inline_keyboard\": [\n        [\n            {\n                \"text\": \"Make Payment\",\n                \"url\": msg.btcpayPayload.url\n            }, \n            {\n                \"text\": \"Expired? Refresh\",\n                \"callback_data\": \"RefreshExpired\"\n            }\n        ]\n    ]\n});\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.options = {\n    chat_id: msg.payload.chatId,\n    reply_markup: reply_markup,\n    message_id: msg.originalMessage.message.message_id\n};\n\nreturn msg;\n",
-    "outputs": "1",
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "x": 2440,
-    "y": 1020,
-    "wires": [["f844abd1.265698"]]
-  },
-  {
-    "id": "12c02383.dd932c",
-    "type": "function",
-    "z": "8feab169.61ec9",
-    "name": "send as alert",
-    "func": "msg.payload.options = false;\n\nreturn msg;\n",
-    "outputs": "1",
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "x": 730,
-    "y": 1140,
-    "wires": [["6a5beee.fc5431"]]
-  },
-  {
-    "id": "51e02100.0c658",
-    "type": "function",
-    "z": "8feab169.61ec9",
-    "name": "keyboard = Join Channel",
-    "func": "const reply_markup = JSON.stringify({\n    \"inline_keyboard\": [\n        [\n            {\n                \"text\": \"Join Channel\",\n                \"url\": flow.get(\"tgInviteLink\")\n            }\n        ]\n    ]\n});\n\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.options = {\n    chat_id: msg.payload.chatId,\n    reply_markup: reply_markup,\n    message_id: msg.originalMessage.message.message_id\n};\n\nreturn [ msg ];\n",
-    "outputs": "1",
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "x": 730,
-    "y": 1260,
-    "wires": [["6a5beee.fc5431"]]
-  },
-  {
-    "id": "1dbcabf8.151b04",
-    "type": "template",
-    "z": "8feab169.61ec9",
-    "name": "content = Wanna buy?",
-    "field": "payload.content",
-    "fieldType": "msg",
-    "format": "handlebars",
-    "syntax": "mustache",
-    "template": "Access to <b>XChan</b> costs <b>{{flow.price}}</b> {{flow.currency}}.\n\nWant to buy it?",
-    "output": "str",
-    "x": 480,
-    "y": 560,
-    "wires": [["95bcdaff.8567d8"]]
-  },
-  {
-    "id": "44c6abde.3ac744",
-    "type": "template",
-    "z": "8feab169.61ec9",
-    "name": "content = Invoice",
-    "field": "payload.content",
-    "fieldType": "msg",
-    "format": "handlebars",
-    "syntax": "mustache",
-    "template": "⚡⚡⚡ Here is your invoice ⚡⚡⚡\n\n<b>Note:</b> it expires after 15 mins.",
-    "output": "str",
-    "x": 2430,
-    "y": 980,
-    "wires": [["ef375571.8749c8"]]
-  },
-  {
-    "id": "9f3837b8.acfb68",
-    "type": "template",
-    "z": "8feab169.61ec9",
-    "name": "content = Access Granted",
-    "field": "payload.content",
-    "fieldType": "msg",
-    "format": "handlebars",
-    "syntax": "mustache",
-    "template": "🔓 Access Granted 🔓",
-    "output": "str",
-    "x": 690,
-    "y": 1100,
-    "wires": [["12c02383.dd932c"]]
-  },
-  {
-    "id": "ee7ffba1.871458",
-    "type": "template",
-    "z": "8feab169.61ec9",
-    "name": "content = Access Granted - Join",
-    "field": "payload.content",
-    "fieldType": "msg",
-    "format": "handlebars",
-    "syntax": "mustache",
-    "template": "🔓 Access Granted 🔓\n\nNow you can join the channel.",
-    "output": "str",
-    "x": 710,
-    "y": 1220,
-    "wires": [["51e02100.0c658"]]
-  },
-  {
-    "id": "5e47b85e.a251f8",
-    "type": "switch",
-    "z": "8feab169.61ec9",
-    "name": "Which callback?",
-    "property": "msg.payload.content",
-    "propertyType": "msg",
-    "rules": [
-      { "t": "eq", "v": "Buy", "vt": "str" },
-      { "t": "eq", "v": "RefreshExpired", "vt": "str" },
-      { "t": "eq", "v": "GetAccess", "vt": "str" }
-    ],
-    "checkall": "false",
-    "repair": false,
-    "outputs": 3,
-    "x": 420,
-    "y": 1060,
-    "wires": [
-      ["2ed045b5.f316da"],
-      ["2ed045b5.f316da"],
-      ["9f3837b8.acfb68", "ee7ffba1.871458"]
-    ]
-  },
-  {
-    "id": "29b21733.ea6768",
-    "type": "telegram command",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "command": "/start",
-    "bot": "ac4e405.e7abcc",
-    "strict": false,
-    "hasresponse": false,
-    "x": 190,
-    "y": 580,
-    "wires": [["1dbcabf8.151b04"], []]
-  },
-  {
-    "id": "7013db53.db8f34",
-    "type": "telegram event",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "bot": "ac4e405.e7abcc",
-    "event": "callback_query",
-    "autoanswer": true,
-    "x": 220,
-    "y": 1060,
-    "wires": [["5e47b85e.a251f8"]]
-  },
-  {
-    "id": "d7804750.68eb88",
-    "type": "btcpay-api",
-    "z": "8feab169.61ec9",
-    "method": "POST",
-    "path": "/invoices",
-    "client": "9711e4a7.bae348",
-    "name": "Create Invoice",
-    "x": 1800,
-    "y": 1060,
-    "wires": [["4ed7081c.357138"]]
-  },
-  {
-    "id": "99348239.6736a",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "API data",
-    "rules": [
-      { "t": "delete", "p": "payload", "pt": "msg" },
-      {
-        "t": "set",
-        "p": "payload.price",
-        "pt": "msg",
-        "to": "price",
-        "tot": "flow"
-      },
-      {
-        "t": "set",
-        "p": "payload.currency",
-        "pt": "msg",
-        "to": "currency",
-        "tot": "flow"
-      },
-      {
-        "t": "set",
-        "p": "payload.notificationURL",
-        "pt": "msg",
-        "to": "webhookUrl",
-        "tot": "flow"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 1780,
-    "y": 1020,
-    "wires": [["d7804750.68eb88"]]
-  },
-  {
-    "id": "5ee3ca64.51a6f4",
-    "type": "sqlite",
-    "z": "8feab169.61ec9",
-    "mydb": "d0934ac4.e0be88",
-    "sqlquery": "prepared",
-    "sql": "SELECT * FROM users_invoices WHERE user_id = $uid ORDER BY created_at LIMIT 1;",
-    "name": "Get last invoice id for user",
-    "x": 970,
-    "y": 940,
-    "wires": [["fdd8e283.a86e3"]]
-  },
-  {
-    "id": "fdd8e283.a86e3",
-    "type": "switch",
-    "z": "8feab169.61ec9",
-    "name": "Has invoice id?",
-    "property": "payload",
-    "propertyType": "msg",
-    "rules": [{ "t": "nempty" }, { "t": "else" }],
-    "checkall": "false",
-    "repair": false,
-    "outputs": 2,
-    "x": 1240,
-    "y": 920,
-    "wires": [["3c467d62.6c06d2"], ["99348239.6736a"]],
-    "outputLabels": ["Yes", "No"]
-  },
-  {
-    "id": "72cc780e.4aa108",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "Prepare data",
-    "rules": [
-      {
-        "t": "set",
-        "p": "params.$uid",
-        "pt": "msg",
-        "to": "tgPayload.from.id",
-        "tot": "msg"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 930,
-    "y": 900,
-    "wires": [["5ee3ca64.51a6f4"]]
-  },
-  {
-    "id": "887aeadc.b175f8",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "Prepare data",
-    "rules": [
-      { "t": "delete", "p": "params", "pt": "msg" },
-      {
-        "t": "set",
-        "p": "params.$iid",
-        "pt": "msg",
-        "to": "btcpayPayload.id",
-        "tot": "msg"
-      },
-      {
-        "t": "set",
-        "p": "params.$uid",
-        "pt": "msg",
-        "to": "originalMessage.from.id",
-        "tot": "msg"
-      },
-      {
-        "t": "set",
-        "p": "params.$mid",
-        "pt": "msg",
-        "to": "originalMessage.message.message_id",
-        "tot": "msg"
-      },
-      { "t": "set", "p": "params.$time", "pt": "msg", "to": "", "tot": "date" }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 2070,
-    "y": 1060,
-    "wires": [["5acd4e54.c53b2"]]
-  },
-  {
-    "id": "5acd4e54.c53b2",
-    "type": "sqlite",
-    "z": "8feab169.61ec9",
-    "mydb": "d0934ac4.e0be88",
-    "sqlquery": "prepared",
-    "sql": "INSERT INTO users_invoices(invoice_id, user_id, msg_id, created_at, paid)\n       VALUES($iid, $uid, $mid, $time, 0);",
-    "name": "Save user-invoice",
-    "x": 2090,
-    "y": 1100,
-    "wires": [["ab22d3ea.c821"]]
-  },
-  {
-    "id": "2ed045b5.f316da",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "payload -> tgPayload",
-    "rules": [
-      {
-        "t": "move",
-        "p": "payload",
-        "pt": "msg",
-        "to": "tgPayload",
-        "tot": "msg"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 680,
-    "y": 920,
-    "wires": [["72cc780e.4aa108"]]
-  },
-  {
-    "id": "70780861.c75af8",
-    "type": "btcpay-api",
-    "z": "8feab169.61ec9",
-    "method": "GET",
-    "path": "",
-    "client": "9711e4a7.bae348",
-    "name": "Get Invoice Data",
-    "x": 1530,
-    "y": 840,
-    "wires": [["2ede07e2.5a2d58"]]
-  },
-  {
-    "id": "3c467d62.6c06d2",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "API data",
-    "rules": [
-      {
-        "t": "set",
-        "p": "path",
-        "pt": "msg",
-        "to": "\"/invoices/\" & payload[0].invoice_id",
-        "tot": "jsonata"
-      },
-      { "t": "delete", "p": "payload", "pt": "msg" }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 1500,
-    "y": 800,
-    "wires": [["70780861.c75af8"]]
-  },
-  {
-    "id": "2ede07e2.5a2d58",
-    "type": "switch",
-    "z": "8feab169.61ec9",
-    "name": "Got Invoice data?",
-    "property": "payload",
-    "propertyType": "msg",
-    "rules": [{ "t": "hask", "v": "status", "vt": "str" }, { "t": "else" }],
-    "checkall": "false",
-    "repair": false,
-    "outputs": 2,
-    "x": 1530,
-    "y": 920,
-    "wires": [["5cbd33c.75eeacc"], ["99348239.6736a"]],
-    "outputLabels": ["Yes", "No"]
-  },
-  {
-    "id": "5cbd33c.75eeacc",
-    "type": "switch",
-    "z": "8feab169.61ec9",
-    "name": "Expired?",
-    "property": "payload.status",
-    "propertyType": "msg",
-    "rules": [{ "t": "neq", "v": "expired", "vt": "str" }, { "t": "else" }],
-    "checkall": "false",
-    "repair": false,
-    "outputs": 2,
-    "x": 1780,
-    "y": 880,
-    "wires": [["6f8dfcaa.da8f24"], ["99348239.6736a"]],
-    "outputLabels": ["No", "Yes"]
-  },
-  {
-    "id": "d699f9ce.1a02c8",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "Prepare data",
-    "rules": [
-      { "t": "delete", "p": "params", "pt": "msg" },
-      {
-        "t": "set",
-        "p": "params.$iid",
-        "pt": "msg",
-        "to": "btcpayPayload.id",
-        "tot": "msg"
-      },
-      {
-        "t": "set",
-        "p": "params.$mid",
-        "pt": "msg",
-        "to": "originalMessage.message.message_id",
-        "tot": "msg"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 2050,
-    "y": 860,
-    "wires": [["deeebee7.feae5"]]
-  },
-  {
-    "id": "deeebee7.feae5",
-    "type": "sqlite",
-    "z": "8feab169.61ec9",
-    "mydb": "d0934ac4.e0be88",
-    "sqlquery": "prepared",
-    "sql": "UPDATE users_invoices SET msg_id = $mid WHERE invoice_id = $iid;",
-    "name": "Update msg id for user-invoice",
-    "x": 2090,
-    "y": 900,
-    "wires": [["ab22d3ea.c821"]]
-  },
-  {
-    "id": "f7898537.4dd7f8",
-    "type": "link in",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "links": ["2716b7a1.b41af8", "4ed19a18.abc134", "6a5beee.fc5431"],
-    "x": 2135,
-    "y": 660,
-    "wires": [["97331212.7f8f5"]]
-  },
-  {
-    "id": "f844abd1.265698",
-    "type": "link out",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "links": ["f681d971.4735f8"],
-    "x": 2655,
-    "y": 1000,
-    "wires": []
-  },
-  {
-    "id": "4ed19a18.abc134",
-    "type": "link out",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "links": ["f7898537.4dd7f8"],
-    "x": 2295,
-    "y": 1400,
-    "wires": []
-  },
-  {
-    "id": "ba7eb89.e8cc748",
-    "type": "function",
-    "z": "8feab169.61ec9",
-    "name": "keyboard = Get Access",
-    "func": "const reply_markup = JSON.stringify({\n    \"inline_keyboard\": [\n        [\n            {\n                \"text\": \"Get Access\",\n                \"callback_data\": \"GetAccess\"            \n            }\n        ]\n    ]\n});\n\nmsg.payload = {\n    chatId: msg.payload[0].user_id,\n    type: \"message\",\n    options: {\n        reply_markup : reply_markup\n    }\n}\n\nreturn msg;\n\n",
-    "outputs": "1",
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "x": 2050,
-    "y": 1460,
-    "wires": [["ceff7288.dae0f"]]
-  },
-  {
-    "id": "ceff7288.dae0f",
-    "type": "template",
-    "z": "8feab169.61ec9",
-    "name": "content = Thanks for buying",
-    "field": "payload.content",
-    "fieldType": "msg",
-    "format": "handlebars",
-    "syntax": "mustache",
-    "template": "✔ Thank you for the purchase!",
-    "output": "str",
-    "x": 2060,
-    "y": 1500,
-    "wires": [["c4d5745c.165168"]]
-  },
-  {
-    "id": "6a5beee.fc5431",
-    "type": "link out",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "links": ["f7898537.4dd7f8"],
-    "x": 975,
-    "y": 1180,
-    "wires": []
-  },
-  {
-    "id": "41f6a31c.7e216c",
-    "type": "http in",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "url": "/btcpay-ipn/",
-    "method": "post",
-    "upload": false,
-    "swaggerDoc": "",
-    "x": 230,
-    "y": 1440,
-    "wires": [["24d1f355.b85dfc"]]
-  },
-  {
-    "id": "85f81068.ddfb3",
-    "type": "http response",
-    "z": "8feab169.61ec9",
-    "name": "http response = ok",
-    "statusCode": "",
-    "headers": {},
-    "x": 750,
-    "y": 1440,
-    "wires": []
-  },
-  {
-    "id": "24d1f355.b85dfc",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "Prepare data for API",
-    "rules": [
-      {
-        "t": "set",
-        "p": "path",
-        "pt": "msg",
-        "to": "\"/invoices/\" & payload.id",
-        "tot": "jsonata"
-      },
-      { "t": "delete", "p": "payload", "pt": "msg" }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 480,
-    "y": 1440,
-    "wires": [["29a11a18.40ab16"]]
-  },
-  {
-    "id": "29a11a18.40ab16",
-    "type": "btcpay-api",
-    "z": "8feab169.61ec9",
-    "method": "GET",
-    "path": "",
-    "client": "9711e4a7.bae348",
-    "name": "Fetch Invoice",
-    "x": 510,
-    "y": 1480,
-    "wires": [["85f81068.ddfb3", "af56d909.554b68"]]
-  },
-  {
-    "id": "694ce08c.e71a",
-    "type": "switch",
-    "z": "8feab169.61ec9",
-    "name": "check status",
-    "property": "btcpayPayload.status",
-    "propertyType": "msg",
-    "rules": [
-      { "t": "eq", "v": "confirmed", "vt": "str" },
-      { "t": "eq", "v": "complete", "vt": "str" }
-    ],
-    "checkall": "false",
-    "repair": false,
-    "outputs": 2,
-    "x": 990,
-    "y": 1480,
-    "wires": [["682f8f94.6e306"], ["682f8f94.6e306"]]
-  },
-  {
-    "id": "899aba79.39d068",
-    "type": "sqlite",
-    "z": "8feab169.61ec9",
-    "mydb": "d0934ac4.e0be88",
-    "sqlquery": "prepared",
-    "sql": "SELECT * FROM users_invoices WHERE invoice_id = $iid;",
-    "name": "Get user-invoice",
-    "x": 1580,
-    "y": 1480,
-    "wires": [["90a44066.f5a03"]]
-  },
-  {
-    "id": "90a44066.f5a03",
-    "type": "switch",
-    "z": "8feab169.61ec9",
-    "name": "Has data?",
-    "property": "payload",
-    "propertyType": "msg",
-    "rules": [{ "t": "nempty" }, { "t": "else" }],
-    "checkall": "false",
-    "repair": false,
-    "outputs": 2,
-    "x": 1790,
-    "y": 1460,
-    "wires": [["ba7eb89.e8cc748", "b0246b6f.a82658"], []],
-    "outputLabels": ["Yes", "No"]
-  },
-  {
-    "id": "682f8f94.6e306",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "Prepare data",
-    "rules": [
-      {
-        "t": "set",
-        "p": "params.$iid",
-        "pt": "msg",
-        "to": "btcpayPayload.id",
-        "tot": "msg"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 1250,
-    "y": 1440,
-    "wires": [["8d397820.9552a8"]]
-  },
-  {
-    "id": "8d397820.9552a8",
-    "type": "sqlite",
-    "z": "8feab169.61ec9",
-    "mydb": "d0934ac4.e0be88",
-    "sqlquery": "prepared",
-    "sql": "UPDATE users_invoices SET paid = 1 WHERE invoice_id = $iid;",
-    "name": "Set paid=1 for user-invoice",
-    "x": 1300,
-    "y": 1480,
-    "wires": [["899aba79.39d068"]]
-  },
-  {
-    "id": "9b3ca558.b565c8",
-    "type": "debug",
-    "z": "8feab169.61ec9",
-    "name": "Output data",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "payload",
-    "targetType": "msg",
-    "statusVal": "",
-    "statusType": "auto",
-    "x": 970,
-    "y": 280,
-    "wires": []
-  },
-  {
-    "id": "2f0a667e.8f7e6a",
-    "type": "inject",
-    "z": "8feab169.61ec9",
-    "name": "Get All User-Invoices",
-    "props": [{ "p": "payload" }, { "p": "topic", "vt": "str" }],
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
-    "x": 940,
-    "y": 180,
-    "wires": [["c9c623ba.b469e"]]
-  },
-  {
-    "id": "c9c623ba.b469e",
-    "type": "sqlite",
-    "z": "8feab169.61ec9",
-    "mydb": "d0934ac4.e0be88",
-    "sqlquery": "fixed",
-    "sql": "SELECT * FROM users_invoices;",
-    "name": "Get data",
-    "x": 980,
-    "y": 220,
-    "wires": [["9b3ca558.b565c8"]]
-  },
-  {
-    "id": "ab22d3ea.c821",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "tgPayload -> payload",
-    "rules": [
-      {
-        "t": "move",
-        "p": "tgPayload",
-        "pt": "msg",
-        "to": "payload",
-        "tot": "msg"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 2440,
-    "y": 940,
-    "wires": [["44c6abde.3ac744"]]
-  },
-  {
-    "id": "4ed7081c.357138",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "payload -> btcpayPayload",
-    "rules": [
-      {
-        "t": "move",
-        "p": "payload",
-        "pt": "msg",
-        "to": "btcpayPayload",
-        "tot": "msg"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 2070,
-    "y": 1020,
-    "wires": [["887aeadc.b175f8"]]
-  },
-  {
-    "id": "6f8dfcaa.da8f24",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "payload -> btcpayPayload",
-    "rules": [
-      {
-        "t": "move",
-        "p": "payload",
-        "pt": "msg",
-        "to": "btcpayPayload",
-        "tot": "msg"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 2050,
-    "y": 820,
-    "wires": [["d699f9ce.1a02c8"]]
-  },
-  {
-    "id": "af56d909.554b68",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "payload -> btcpayPayload",
-    "rules": [
-      {
-        "t": "move",
-        "p": "payload",
-        "pt": "msg",
-        "to": "btcpayPayload",
-        "tot": "msg"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 770,
-    "y": 1480,
-    "wires": [["694ce08c.e71a"]]
-  },
-  {
-    "id": "b0246b6f.a82658",
-    "type": "function",
-    "z": "8feab169.61ec9",
-    "name": "delete message",
-    "func": "msg.payload = {\n    chatId: msg.payload[0].user_id,\n    content: msg.payload[0].msg_id,\n    type: 'deleteMessage'\n}\n\nreturn msg;\n\n",
-    "outputs": "1",
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "x": 2020,
-    "y": 1400,
-    "wires": [["4ed19a18.abc134"]]
-  },
-  {
-    "id": "d443b554.b31538",
-    "type": "comment",
-    "z": "8feab169.61ec9",
-    "name": "IPN Handler",
-    "info": "",
-    "x": 210,
-    "y": 1360,
-    "wires": []
-  },
-  {
-    "id": "afbe8f90.a7ff4",
-    "type": "change",
-    "z": "8feab169.61ec9",
-    "name": "parse_mode = HTML",
-    "rules": [
-      {
-        "t": "set",
-        "p": "payload.options.parse_mode",
-        "pt": "msg",
-        "to": "HTML",
-        "tot": "str"
-      }
-    ],
-    "action": "",
-    "property": "",
-    "from": "",
-    "to": "",
-    "reg": false,
-    "x": 2400,
-    "y": 580,
-    "wires": [["97331212.7f8f5"]]
-  },
-  {
-    "id": "f681d971.4735f8",
-    "type": "link in",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "links": ["e2b5dd69.a0337", "f844abd1.265698", "c4d5745c.165168"],
-    "x": 2135,
-    "y": 580,
-    "wires": [["afbe8f90.a7ff4"]]
-  },
-  {
-    "id": "e2b5dd69.a0337",
-    "type": "link out",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "links": ["f681d971.4735f8"],
-    "x": 735,
-    "y": 580,
-    "wires": []
-  },
-  {
-    "id": "c4d5745c.165168",
-    "type": "link out",
-    "z": "8feab169.61ec9",
-    "name": "",
-    "links": ["f681d971.4735f8"],
-    "x": 2295,
-    "y": 1480,
-    "wires": []
-  },
-  {
-    "id": "8bf4517b.3777d",
-    "type": "comment",
-    "z": "8feab169.61ec9",
-    "name": "Data management",
-    "info": "",
-    "x": 930,
-    "y": 100,
-    "wires": []
-  },
-  {
-    "id": "52460bc.2498cf4",
-    "type": "comment",
-    "z": "8feab169.61ec9",
-    "name": "App Configuration & Setup",
-    "info": "",
-    "x": 250,
-    "y": 100,
-    "wires": []
-  },
-  {
-    "id": "fd077743.a06d88",
-    "type": "comment",
-    "z": "8feab169.61ec9",
-    "name": "Starts Process",
-    "info": "",
-    "x": 220,
-    "y": 500,
-    "wires": []
-  },
-  {
-    "id": "aeefdf50.2eb9b",
-    "type": "comment",
-    "z": "8feab169.61ec9",
-    "name": "Button Events",
-    "info": "",
-    "x": 210,
-    "y": 980,
-    "wires": []
-  },
-  {
-    "id": "2de02ea2.c70b12",
-    "type": "comment",
-    "z": "8feab169.61ec9",
-    "name": "Shared Sender",
-    "info": "",
-    "x": 2200,
-    "y": 500,
-    "wires": []
-  },
-  {
-    "id": "d0934ac4.e0be88",
-    "type": "sqlitedb",
-    "z": "",
-    "db": ":memory:",
-    "mode": "RWC"
-  },
-  {
-    "id": "ac4e405.e7abcc",
-    "type": "telegram bot",
-    "z": "",
-    "botname": "Gatekeeper bot",
-    "usernames": "",
-    "chatids": "",
-    "baseapiurl": "",
-    "updatemode": "polling",
-    "pollinterval": "300",
-    "usesocks": false,
-    "sockshost": "",
-    "socksport": "6667",
-    "socksusername": "anonymous",
-    "sockspassword": "",
-    "bothost": "",
-    "localbotport": "8443",
-    "publicbotport": "8443",
-    "privatekey": "",
-    "certificate": "",
-    "useselfsignedcertificate": false,
-    "sslterminated": false,
-    "verboselogging": false
-  },
-  { "id": "9711e4a7.bae348", "type": "btcpay-api-config", "z": "", "name": "" }
+    {
+        "id": "b1c965cf.c2bff8",
+        "type": "tab",
+        "label": "TG - Gatekeeper",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "4e9602ab.ac034c",
+        "type": "sqlite",
+        "z": "b1c965cf.c2bff8",
+        "mydb": "d0934ac4.e0be88",
+        "sqlquery": "batch",
+        "sql": "",
+        "name": "Exec query",
+        "x": 570,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "836d26f8.e10f18",
+        "type": "template",
+        "z": "b1c965cf.c2bff8",
+        "name": "SQL Query = Setup Tables",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "sql",
+        "syntax": "plain",
+        "template": "CREATE TABLE IF NOT EXISTS users_invoices (\n    invoice_id TEXT PRIMARY KEY, /* btcpay invoice id */\n    user_id INTEGER NOT NULL, /* telegram user id */\n    msg_id INTEGER NOT NULL, /* id of telegram msg with the invoice */\n    created_at INTEGER NOT NULL, /* creation timestamp */\n    paid INTEGER NOT NULL /* 0 - not paid; 1 - paid */\n);\n\nCREATE INDEX IF NOT EXISTS idx_users_invoices_user_created\n    ON users_invoices (user_id, created_at);\n\nCREATE INDEX IF NOT EXISTS idx_users_invoices_user_paid\n    ON users_invoices (user_id, paid);\n",
+        "output": "str",
+        "x": 520,
+        "y": 220,
+        "wires": [
+            [
+                "4e9602ab.ac034c"
+            ]
+        ]
+    },
+    {
+        "id": "5ce0b722.db0a98",
+        "type": "inject",
+        "z": "b1c965cf.c2bff8",
+        "name": "Setup App",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 220,
+        "wires": [
+            [
+                "836d26f8.e10f18"
+            ]
+        ]
+    },
+    {
+        "id": "1cfb6187.d043ae",
+        "type": "inject",
+        "z": "b1c965cf.c2bff8",
+        "name": "Auto-exec on startup",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 240,
+        "y": 180,
+        "wires": [
+            [
+                "dcc49b39.e21688"
+            ]
+        ]
+    },
+    {
+        "id": "dcc49b39.e21688",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "🔨 App Settings",
+        "rules": [
+            {
+                "t": "set",
+                "p": "price",
+                "pt": "flow",
+                "to": "0.01",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "currency",
+                "pt": "flow",
+                "to": "BTC",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "tgInviteLink",
+                "pt": "flow",
+                "to": "https://t.me/joinchat/AAAAA",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "webhookUrl",
+                "pt": "flow",
+                "to": "https://nodered.yoursite.com/btcpay-ipn/",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c0ee9e01.e11a8",
+        "type": "telegram sender",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "bot": "ac4e405.e7abcc",
+        "x": 2410,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "37eaa8dc.1efc68",
+        "type": "function",
+        "z": "b1c965cf.c2bff8",
+        "name": "keyboard = Buy",
+        "func": "var opts = {\n  reply_markup: JSON.stringify({\n    \"inline_keyboard\": [\n        [\n            {\n                \"text\": \"Yes, buy with Bitcoin\",\n                \"callback_data\": \"Buy\"            \n            }\n        ]\n    ]\n  })\n};\nmsg.payload.options = opts;\n\nreturn msg;\n",
+        "outputs": "1",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 500,
+        "y": 600,
+        "wires": [
+            [
+                "3439eede.bcfc52"
+            ]
+        ]
+    },
+    {
+        "id": "234aa9e9.79cc26",
+        "type": "function",
+        "z": "b1c965cf.c2bff8",
+        "name": "keyboard = invoice link",
+        "func": "const reply_markup = JSON.stringify({\n    \"inline_keyboard\": [\n        [\n            {\n                \"text\": \"Make Payment\",\n                \"url\": msg.btcpayPayload.url\n            }, \n            {\n                \"text\": \"Expired? Refresh\",\n                \"callback_data\": \"RefreshExpired\"\n            }\n        ]\n    ]\n});\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.options = {\n    chat_id: msg.payload.chatId,\n    reply_markup: reply_markup,\n    message_id: msg.originalMessage.message.message_id\n};\n\nreturn msg;\n",
+        "outputs": "1",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 2440,
+        "y": 1020,
+        "wires": [
+            [
+                "dac5fe08.32d83"
+            ]
+        ]
+    },
+    {
+        "id": "2f4dfc78.aca034",
+        "type": "function",
+        "z": "b1c965cf.c2bff8",
+        "name": "send as alert",
+        "func": "msg.payload.options = false;\n\nreturn msg;\n",
+        "outputs": "1",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 730,
+        "y": 1140,
+        "wires": [
+            [
+                "b8334051.0e467"
+            ]
+        ]
+    },
+    {
+        "id": "df06b5a6.24c5a8",
+        "type": "function",
+        "z": "b1c965cf.c2bff8",
+        "name": "keyboard = Join Channel",
+        "func": "const reply_markup = JSON.stringify({\n    \"inline_keyboard\": [\n        [\n            {\n                \"text\": \"Join Channel\",\n                \"url\": flow.get(\"tgInviteLink\")\n            }\n        ]\n    ]\n});\n\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.options = {\n    chat_id: msg.payload.chatId,\n    reply_markup: reply_markup,\n    message_id: msg.originalMessage.message.message_id\n};\n\nreturn [ msg ];\n",
+        "outputs": "1",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 730,
+        "y": 1260,
+        "wires": [
+            [
+                "b8334051.0e467"
+            ]
+        ]
+    },
+    {
+        "id": "ad3a06bb.3534e8",
+        "type": "template",
+        "z": "b1c965cf.c2bff8",
+        "name": "content = Wanna buy?",
+        "field": "payload.content",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Access to <b>XChan</b> costs <b>{{flow.price}}</b> {{flow.currency}}.\n\nWant to buy it?",
+        "output": "str",
+        "x": 480,
+        "y": 560,
+        "wires": [
+            [
+                "37eaa8dc.1efc68"
+            ]
+        ]
+    },
+    {
+        "id": "940f11cc.d328b",
+        "type": "template",
+        "z": "b1c965cf.c2bff8",
+        "name": "content = Invoice",
+        "field": "payload.content",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "⚡⚡⚡ Here is your invoice ⚡⚡⚡\n\n<b>Note:</b> it expires after 15 mins.",
+        "output": "str",
+        "x": 2430,
+        "y": 980,
+        "wires": [
+            [
+                "234aa9e9.79cc26"
+            ]
+        ]
+    },
+    {
+        "id": "af6af72d.108ec8",
+        "type": "template",
+        "z": "b1c965cf.c2bff8",
+        "name": "content = Access Granted",
+        "field": "payload.content",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "🔓 Access Granted 🔓",
+        "output": "str",
+        "x": 690,
+        "y": 1100,
+        "wires": [
+            [
+                "2f4dfc78.aca034"
+            ]
+        ]
+    },
+    {
+        "id": "4ab0dce4.5f9e54",
+        "type": "template",
+        "z": "b1c965cf.c2bff8",
+        "name": "content = Access Granted - Join",
+        "field": "payload.content",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "🔓 Access Granted 🔓\n\nNow you can join the channel.",
+        "output": "str",
+        "x": 710,
+        "y": 1220,
+        "wires": [
+            [
+                "df06b5a6.24c5a8"
+            ]
+        ]
+    },
+    {
+        "id": "1efdd5f7.301baa",
+        "type": "switch",
+        "z": "b1c965cf.c2bff8",
+        "name": "Which callback?",
+        "property": "msg.payload.content",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Buy",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "RefreshExpired",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "GetAccess",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 3,
+        "x": 420,
+        "y": 1060,
+        "wires": [
+            [
+                "6bbc5a46.e09b74"
+            ],
+            [
+                "6bbc5a46.e09b74"
+            ],
+            [
+                "af6af72d.108ec8",
+                "4ab0dce4.5f9e54"
+            ]
+        ]
+    },
+    {
+        "id": "a67cffe4.bd3ca",
+        "type": "telegram command",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "command": "/start",
+        "bot": "ac4e405.e7abcc",
+        "strict": false,
+        "hasresponse": false,
+        "x": 190,
+        "y": 580,
+        "wires": [
+            [
+                "ad3a06bb.3534e8"
+            ]
+        ]
+    },
+    {
+        "id": "116e6754.ccb3e9",
+        "type": "telegram event",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "bot": "ac4e405.e7abcc",
+        "event": "callback_query",
+        "autoanswer": true,
+        "x": 220,
+        "y": 1060,
+        "wires": [
+            [
+                "1efdd5f7.301baa"
+            ]
+        ]
+    },
+    {
+        "id": "f3a04c89.717f1",
+        "type": "btcpay-api",
+        "z": "b1c965cf.c2bff8",
+        "method": "POST",
+        "path": "/invoices",
+        "client": "9711e4a7.bae348",
+        "name": "Create Invoice",
+        "x": 1800,
+        "y": 1060,
+        "wires": [
+            [
+                "5a08a622.fe2448"
+            ]
+        ]
+    },
+    {
+        "id": "8b0edd5.f4bdb2",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "API data",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.price",
+                "pt": "msg",
+                "to": "price",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.currency",
+                "pt": "msg",
+                "to": "currency",
+                "tot": "flow"
+            },
+            {
+                "t": "set",
+                "p": "payload.notificationURL",
+                "pt": "msg",
+                "to": "webhookUrl",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1780,
+        "y": 1020,
+        "wires": [
+            [
+                "f3a04c89.717f1"
+            ]
+        ]
+    },
+    {
+        "id": "c5c6cc7d.e65a8",
+        "type": "sqlite",
+        "z": "b1c965cf.c2bff8",
+        "mydb": "d0934ac4.e0be88",
+        "sqlquery": "prepared",
+        "sql": "SELECT * FROM users_invoices WHERE user_id = $uid ORDER BY created_at LIMIT 1;",
+        "name": "Get last invoice id for user",
+        "x": 970,
+        "y": 940,
+        "wires": [
+            [
+                "4ba3194.94332e8"
+            ]
+        ]
+    },
+    {
+        "id": "4ba3194.94332e8",
+        "type": "switch",
+        "z": "b1c965cf.c2bff8",
+        "name": "Has invoice id?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1240,
+        "y": 920,
+        "wires": [
+            [
+                "b9a9e202.f12f7"
+            ],
+            [
+                "8b0edd5.f4bdb2"
+            ]
+        ],
+        "outputLabels": [
+            "Yes",
+            "No"
+        ]
+    },
+    {
+        "id": "5704a92d.996448",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "Prepare data",
+        "rules": [
+            {
+                "t": "set",
+                "p": "params.$uid",
+                "pt": "msg",
+                "to": "tgPayload.from.id",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 900,
+        "wires": [
+            [
+                "c5c6cc7d.e65a8"
+            ]
+        ]
+    },
+    {
+        "id": "a3343be1.71e0e8",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "Prepare data",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "params",
+                "pt": "msg"
+            },
+            {
+                "t": "set",
+                "p": "params.$iid",
+                "pt": "msg",
+                "to": "btcpayPayload.id",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "params.$uid",
+                "pt": "msg",
+                "to": "originalMessage.from.id",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "params.$mid",
+                "pt": "msg",
+                "to": "originalMessage.message.message_id",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "params.$time",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2070,
+        "y": 1060,
+        "wires": [
+            [
+                "ebae6e3f.515f1"
+            ]
+        ]
+    },
+    {
+        "id": "ebae6e3f.515f1",
+        "type": "sqlite",
+        "z": "b1c965cf.c2bff8",
+        "mydb": "d0934ac4.e0be88",
+        "sqlquery": "prepared",
+        "sql": "INSERT INTO users_invoices(invoice_id, user_id, msg_id, created_at, paid)\n       VALUES($iid, $uid, $mid, $time, 0);",
+        "name": "Save user-invoice",
+        "x": 2090,
+        "y": 1100,
+        "wires": [
+            [
+                "abdce8c.4187718"
+            ]
+        ]
+    },
+    {
+        "id": "6bbc5a46.e09b74",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "payload -> tgPayload",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "tgPayload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 680,
+        "y": 920,
+        "wires": [
+            [
+                "5704a92d.996448"
+            ]
+        ]
+    },
+    {
+        "id": "d34088a6.d2b908",
+        "type": "btcpay-api",
+        "z": "b1c965cf.c2bff8",
+        "method": "GET",
+        "path": "",
+        "client": "9711e4a7.bae348",
+        "name": "Get Invoice Data",
+        "x": 1530,
+        "y": 840,
+        "wires": [
+            [
+                "5e988c69.850e94"
+            ]
+        ]
+    },
+    {
+        "id": "b9a9e202.f12f7",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "API data",
+        "rules": [
+            {
+                "t": "set",
+                "p": "path",
+                "pt": "msg",
+                "to": "\"/invoices/\" & payload[0].invoice_id",
+                "tot": "jsonata"
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1500,
+        "y": 800,
+        "wires": [
+            [
+                "d34088a6.d2b908"
+            ]
+        ]
+    },
+    {
+        "id": "5e988c69.850e94",
+        "type": "switch",
+        "z": "b1c965cf.c2bff8",
+        "name": "Got Invoice data?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "status",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1530,
+        "y": 920,
+        "wires": [
+            [
+                "e0448a0f.0aeb48"
+            ],
+            [
+                "8b0edd5.f4bdb2"
+            ]
+        ],
+        "outputLabels": [
+            "Yes",
+            "No"
+        ]
+    },
+    {
+        "id": "e0448a0f.0aeb48",
+        "type": "switch",
+        "z": "b1c965cf.c2bff8",
+        "name": "Expired?",
+        "property": "payload.status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "expired",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1780,
+        "y": 880,
+        "wires": [
+            [
+                "8b9459b6.b69e48"
+            ],
+            [
+                "8b0edd5.f4bdb2"
+            ]
+        ],
+        "outputLabels": [
+            "No",
+            "Yes"
+        ]
+    },
+    {
+        "id": "be5fc001.48d2a",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "Prepare data",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "params",
+                "pt": "msg"
+            },
+            {
+                "t": "set",
+                "p": "params.$iid",
+                "pt": "msg",
+                "to": "btcpayPayload.id",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "params.$mid",
+                "pt": "msg",
+                "to": "originalMessage.message.message_id",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2050,
+        "y": 860,
+        "wires": [
+            [
+                "1c9c9885.f35eb7"
+            ]
+        ]
+    },
+    {
+        "id": "1c9c9885.f35eb7",
+        "type": "sqlite",
+        "z": "b1c965cf.c2bff8",
+        "mydb": "d0934ac4.e0be88",
+        "sqlquery": "prepared",
+        "sql": "UPDATE users_invoices SET msg_id = $mid WHERE invoice_id = $iid;",
+        "name": "Update msg id for user-invoice",
+        "x": 2090,
+        "y": 900,
+        "wires": [
+            [
+                "abdce8c.4187718"
+            ]
+        ]
+    },
+    {
+        "id": "c25fc6c1.773e78",
+        "type": "link in",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "links": [
+            "2716b7a1.b41af8",
+            "ede2a7eb.034408",
+            "b8334051.0e467"
+        ],
+        "x": 2135,
+        "y": 660,
+        "wires": [
+            [
+                "c0ee9e01.e11a8"
+            ]
+        ]
+    },
+    {
+        "id": "dac5fe08.32d83",
+        "type": "link out",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "links": [
+            "72f1d607.6dbf08"
+        ],
+        "x": 2655,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "ede2a7eb.034408",
+        "type": "link out",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "links": [
+            "c25fc6c1.773e78"
+        ],
+        "x": 1955,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "a91187c.6223478",
+        "type": "function",
+        "z": "b1c965cf.c2bff8",
+        "name": "keyboard = Get Access",
+        "func": "const reply_markup = JSON.stringify({\n    \"inline_keyboard\": [\n        [\n            {\n                \"text\": \"Get Access\",\n                \"callback_data\": \"GetAccess\"            \n            }\n        ]\n    ]\n});\n\nmsg.payload = {\n    chatId: msg.payload[0].user_id,\n    type: \"message\",\n    options: {\n        reply_markup : reply_markup\n    }\n}\n\nreturn msg;\n\n",
+        "outputs": "1",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 1710,
+        "y": 1420,
+        "wires": [
+            [
+                "9ac12cfb.cb007"
+            ]
+        ]
+    },
+    {
+        "id": "9ac12cfb.cb007",
+        "type": "template",
+        "z": "b1c965cf.c2bff8",
+        "name": "content = Thanks for buying",
+        "field": "payload.content",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "✔ Thank you for the purchase!",
+        "output": "str",
+        "x": 1720,
+        "y": 1460,
+        "wires": [
+            [
+                "9a7249b9.da31c8"
+            ]
+        ]
+    },
+    {
+        "id": "b8334051.0e467",
+        "type": "link out",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "links": [
+            "c25fc6c1.773e78"
+        ],
+        "x": 975,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "d0bb09ad.e1eb58",
+        "type": "switch",
+        "z": "b1c965cf.c2bff8",
+        "name": "check status",
+        "property": "btcpayPayload.status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "confirmed",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "complete",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 1440,
+        "wires": [
+            [
+                "3ac2f308.51a85c"
+            ],
+            [
+                "3ac2f308.51a85c"
+            ]
+        ]
+    },
+    {
+        "id": "34b072de.bf157e",
+        "type": "sqlite",
+        "z": "b1c965cf.c2bff8",
+        "mydb": "d0934ac4.e0be88",
+        "sqlquery": "prepared",
+        "sql": "SELECT * FROM users_invoices WHERE invoice_id = $iid;",
+        "name": "Get user-invoice",
+        "x": 1240,
+        "y": 1440,
+        "wires": [
+            [
+                "8db4e8d3.f20e68"
+            ]
+        ]
+    },
+    {
+        "id": "8db4e8d3.f20e68",
+        "type": "switch",
+        "z": "b1c965cf.c2bff8",
+        "name": "Has data?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1450,
+        "y": 1420,
+        "wires": [
+            [
+                "a91187c.6223478",
+                "3230859b.f52cca"
+            ],
+            []
+        ],
+        "outputLabels": [
+            "Yes",
+            "No"
+        ]
+    },
+    {
+        "id": "3ac2f308.51a85c",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "Prepare data",
+        "rules": [
+            {
+                "t": "set",
+                "p": "params.$iid",
+                "pt": "msg",
+                "to": "btcpayPayload.id",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 910,
+        "y": 1400,
+        "wires": [
+            [
+                "9a17925b.298ce"
+            ]
+        ]
+    },
+    {
+        "id": "9a17925b.298ce",
+        "type": "sqlite",
+        "z": "b1c965cf.c2bff8",
+        "mydb": "d0934ac4.e0be88",
+        "sqlquery": "prepared",
+        "sql": "UPDATE users_invoices SET paid = 1 WHERE invoice_id = $iid;",
+        "name": "Set paid=1 for user-invoice",
+        "x": 960,
+        "y": 1440,
+        "wires": [
+            [
+                "34b072de.bf157e"
+            ]
+        ]
+    },
+    {
+        "id": "ee53609d.1e4fb",
+        "type": "debug",
+        "z": "b1c965cf.c2bff8",
+        "name": "Output data",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 970,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "e8290f6.7e2dbf",
+        "type": "inject",
+        "z": "b1c965cf.c2bff8",
+        "name": "Get All User-Invoices",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 940,
+        "y": 180,
+        "wires": [
+            [
+                "41995b43.501d24"
+            ]
+        ]
+    },
+    {
+        "id": "41995b43.501d24",
+        "type": "sqlite",
+        "z": "b1c965cf.c2bff8",
+        "mydb": "d0934ac4.e0be88",
+        "sqlquery": "fixed",
+        "sql": "SELECT * FROM users_invoices;",
+        "name": "Get data",
+        "x": 980,
+        "y": 220,
+        "wires": [
+            [
+                "ee53609d.1e4fb"
+            ]
+        ]
+    },
+    {
+        "id": "abdce8c.4187718",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "tgPayload -> payload",
+        "rules": [
+            {
+                "t": "move",
+                "p": "tgPayload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2440,
+        "y": 940,
+        "wires": [
+            [
+                "940f11cc.d328b"
+            ]
+        ]
+    },
+    {
+        "id": "5a08a622.fe2448",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "payload -> btcpayPayload",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "btcpayPayload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2070,
+        "y": 1020,
+        "wires": [
+            [
+                "a3343be1.71e0e8"
+            ]
+        ]
+    },
+    {
+        "id": "8b9459b6.b69e48",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "payload -> btcpayPayload",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "btcpayPayload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2050,
+        "y": 820,
+        "wires": [
+            [
+                "be5fc001.48d2a"
+            ]
+        ]
+    },
+    {
+        "id": "74370d4b.e2fd54",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "payload -> btcpayPayload",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "btcpayPayload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 1440,
+        "wires": [
+            [
+                "d0bb09ad.e1eb58"
+            ]
+        ]
+    },
+    {
+        "id": "3230859b.f52cca",
+        "type": "function",
+        "z": "b1c965cf.c2bff8",
+        "name": "delete message",
+        "func": "msg.payload = {\n    chatId: msg.payload[0].user_id,\n    content: msg.payload[0].msg_id,\n    type: 'deleteMessage'\n}\n\nreturn msg;\n\n",
+        "outputs": "1",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 1680,
+        "y": 1360,
+        "wires": [
+            [
+                "ede2a7eb.034408"
+            ]
+        ]
+    },
+    {
+        "id": "59b13840.137688",
+        "type": "comment",
+        "z": "b1c965cf.c2bff8",
+        "name": "IPN Handler",
+        "info": "",
+        "x": 210,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "28308e88.39dd52",
+        "type": "change",
+        "z": "b1c965cf.c2bff8",
+        "name": "parse_mode = HTML",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.options.parse_mode",
+                "pt": "msg",
+                "to": "HTML",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2400,
+        "y": 580,
+        "wires": [
+            [
+                "c0ee9e01.e11a8"
+            ]
+        ]
+    },
+    {
+        "id": "72f1d607.6dbf08",
+        "type": "link in",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "links": [
+            "3439eede.bcfc52",
+            "dac5fe08.32d83",
+            "9a7249b9.da31c8"
+        ],
+        "x": 2135,
+        "y": 580,
+        "wires": [
+            [
+                "28308e88.39dd52"
+            ]
+        ]
+    },
+    {
+        "id": "3439eede.bcfc52",
+        "type": "link out",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "links": [
+            "72f1d607.6dbf08"
+        ],
+        "x": 735,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "9a7249b9.da31c8",
+        "type": "link out",
+        "z": "b1c965cf.c2bff8",
+        "name": "",
+        "links": [
+            "72f1d607.6dbf08"
+        ],
+        "x": 1955,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "6f83a984.213018",
+        "type": "comment",
+        "z": "b1c965cf.c2bff8",
+        "name": "Data management",
+        "info": "",
+        "x": 930,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "cf95d274.f8fb8",
+        "type": "comment",
+        "z": "b1c965cf.c2bff8",
+        "name": "App Configuration & Setup",
+        "info": "",
+        "x": 250,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "3120b323.3c111c",
+        "type": "comment",
+        "z": "b1c965cf.c2bff8",
+        "name": "Starts Process",
+        "info": "",
+        "x": 220,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "e091583c.67fb18",
+        "type": "comment",
+        "z": "b1c965cf.c2bff8",
+        "name": "Button Events",
+        "info": "",
+        "x": 210,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "1de04999.85b476",
+        "type": "comment",
+        "z": "b1c965cf.c2bff8",
+        "name": "Shared Sender",
+        "info": "",
+        "x": 2200,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "58433a7a.204b34",
+        "type": "btcpay-ipn",
+        "z": "b1c965cf.c2bff8",
+        "client": "9711e4a7.bae348",
+        "path": "/btcpay-ipn",
+        "name": "",
+        "x": 200,
+        "y": 1440,
+        "wires": [
+            [
+                "74370d4b.e2fd54"
+            ]
+        ]
+    },
+    {
+        "id": "d0934ac4.e0be88",
+        "type": "sqlitedb",
+        "z": "",
+        "db": ":memory:",
+        "mode": "RWC"
+    },
+    {
+        "id": "ac4e405.e7abcc",
+        "type": "telegram bot",
+        "z": "",
+        "botname": "Gatekeeper bot",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "updatemode": "polling",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    },
+    {
+        "id": "9711e4a7.bae348",
+        "type": "btcpay-api-config",
+        "z": "",
+        "name": ""
+    }
 ]
 ```
