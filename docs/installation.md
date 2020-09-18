@@ -16,4 +16,4 @@ To build your apps visually, you also need to [install Node-RED](https://nodered
 
 ### BTCPay Nodes
 
-And finally, to enable interaction between Node-RED and BTCPay Server, [install BTCPay Node](https://github.com/alexk111/node-red-contrib-btcpay#install).
+And finally, to enable interaction between Node-RED and BTCPay Server, [install BTCPay Node](https://github.com/redbtc/node-red-contrib-btcpay#install).

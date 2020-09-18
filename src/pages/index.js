@@ -93,7 +93,7 @@ function Home() {
             </a>{" "}
             and{" "}
             <a
-              href="https://github.com/alexk111/node-red-contrib-btcpay"
+              href="https://github.com/redbtc/node-red-contrib-btcpay"
               target="_blank"
               rel="noreferrer noopener"
             >

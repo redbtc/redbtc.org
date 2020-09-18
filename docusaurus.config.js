@@ -5,7 +5,7 @@ module.exports = {
   baseUrl: "/",
   onBrokenLinks: "throw",
   favicon: "img/favicon.ico",
-  organizationName: "alexk111",
+  organizationName: "redbtc",
   projectName: "redbtc.org",
   themeConfig: {
     colorMode: {
@@ -59,11 +59,11 @@ module.exports = {
           items: [
             {
               label: "BTCPay Node",
-              href: "https://github.com/alexk111/node-red-contrib-btcpay",
+              href: "https://github.com/redbtc/node-red-contrib-btcpay",
             },
             {
               label: "RedBtc.org",
-              href: "https://github.com/alexk111/redbtc.org",
+              href: "https://github.com/redbtc/redbtc.org",
             },
           ],
         },
@@ -90,7 +90,7 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve("./sidebarsDocs.js"),
           // Please change this to your repo.
-          editUrl: "https://github.com/alexk111/redbtc.org/edit/master/",
+          editUrl: "https://github.com/redbtc/redbtc.org/edit/master/",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -105,7 +105,7 @@ module.exports = {
         id: "flows",
         path: "flows",
         docLayoutComponent: require.resolve("./src/components/FlowsDocPage"),
-        editUrl: "https://github.com/alexk111/redbtc.org/edit/master/",
+        editUrl: "https://github.com/redbtc/redbtc.org/edit/master/",
         routeBasePath: "flows",
         sidebarPath: require.resolve("./sidebarsFlows.js"),
         showLastUpdateAuthor: true,
