@@ -3,6 +3,7 @@ id: telegram-notifications
 title: Telegram Notifications
 sidebar_label: Telegram Notifications
 hide_table_of_contents: true
+image: /img/og-images/btcpay-telegram.png
 ---
 
 This flow will send you notifications about paid invoices using a Telegram bot.

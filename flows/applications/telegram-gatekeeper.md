@@ -3,6 +3,7 @@ id: telegram-gatekeeper
 title: Telegram Gatekeeper
 sidebar_label: Telegram Gatekeeper
 hide_table_of_contents: true
+image: /img/og-images/btcpay-telegram.png
 ---
 
 This flow creates a Telegram Gatekeeper bot which lets the user join a channel/group in Telegram, only after making a Bitcoin payment for it.
