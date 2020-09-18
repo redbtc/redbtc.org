@@ -34,6 +34,11 @@ module.exports = {
           label: "Flows",
           position: "left",
         },
+        {
+          href: "https://donate.alexkaul.com/redbtc",
+          label: "Donate 💝",
+          position: "right",
+        },
       ],
     },
     footer: {
