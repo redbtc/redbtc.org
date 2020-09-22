@@ -12,7 +12,7 @@ module.exports = {
     {
       type: "category",
       label: "Integrations",
-      items: ["integrations/telegram-notifications"],
+      items: ["integrations/telegram-notifications", "integrations/kraken-exchange"],
     },
     {
       type: "category",
