@@ -6,14 +6,14 @@ hide_table_of_contents: true
 image: /img/og-images/btcpay-github.png
 ---
 
-This flow creates a donation page enabling backers to make Bitcoin donations as GitHub users and automatically get added to Backers lists on your GitHub repo's readme, docs and homepage.
+This flow creates a donation page enabling GitHub users to make Bitcoin donations and automatically get added to Backers lists on your GitHub repo's readme, docs and homepage.
 
 Other features include:
 
-- Multiple projects with separate lists of backers, on a single BTCPay Server store
+- Multiple projects with separate lists of backers, using a single BTCPay Server store
 - Backers lists can be sorted by donation amount or time
 - Avatar sizes customizable via url
-- Anonymous donations
+- Anonymous donations without GitHub account
 
 ## Live Demo
 
@@ -28,8 +28,8 @@ This flow requires the following nodes to be installed on your Node-RED:
 
 To enable GitHub user authentication, you need to [register a new OAuth application](https://github.com/settings/applications/new) on GitHub:
 
-- **Application name** - app name for the GitHub login screen
-- **Homepage URL** - homepage url for the GitHub login screen
+- **Application name** - app name (visible on the GitHub login screen)
+- **Homepage URL** - homepage url (visible on the GitHub login screen)
 - **Authorization callback URL** - set **&lt;your-node-red-url&gt;/gh-auth**. For example, if your Node-RED instance is running on `https://mynode.mydomain.com`, then the url will be `https://mynode.mydomain.com/gh-auth`
 - Register app and optionally upload your app logo. On the same page you'll find **Client ID** and **Client Secret**, which will be required later on the flow configuration stage.
 
