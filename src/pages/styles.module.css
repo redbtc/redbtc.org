@@ -52,3 +52,24 @@
   height: 200px;
   width: 200px;
 }
+
+.backers {
+  padding: 1rem 0 3rem;
+  text-align: center;
+}
+
+.backersTitle {
+  font-size: 3.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+  margin-bottom: 2rem;
+}
+
+.backerImage {
+  border-radius: 50%;
+  vertical-align: middle;;
+}
+
+.becomeBacker {
+  vertical-align: middle;
+}

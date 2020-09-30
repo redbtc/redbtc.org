@@ -6,6 +6,8 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import styles from "./styles.module.css";
 
+const backerSlotsNum = 10;
+
 function getFeatures() {
   return [
     {
@@ -54,11 +56,28 @@ function Feature({ imageUrl, title, description }) {
   );
 }
 
+function Backer(idx) {
+  return (
+    <a href={`https://mynode.redbtc.org/gh-backer/top/${idx}/profile`} rel="noopener nofollow" target="_blank" key={idx}>
+      <img className={styles.backerImage} src={`https://mynode.redbtc.org/gh-backer/top/${idx}/avatar/60`} alt="Red BTC Backer" />
+    </a>
+  )
+}
+
+function getBackers() {
+  const backers = [];
+  for (let i = 0; i < backerSlotsNum; i++) {
+    backers.push(Backer(i))
+  }
+  return backers;
+}
+
 function Home() {
   const context = useDocusaurusContext();
   const { siteConfig = {} } = context;
 
   const features = getFeatures();
+  const backers = getBackers();
 
   return (
     <Layout
@@ -125,6 +144,26 @@ function Home() {
             </div>
           </section>
         )}
+        <section className={styles.backers}>
+          <div className="container">
+            <h4 className={styles.backersTitle}>
+              Backers
+            </h4>
+            <div>
+              {backers}
+              <Link
+                className={clsx(
+                  "button button--outline button--primary",
+                  styles.becomeBacker
+                )}
+                to="https://mynode.redbtc.org/gh-donate"
+              >
+                Become a Backer
+              </Link>
+            </div>
+          </div>
+        </section>
+
       </main>
     </Layout>
   );
