@@ -17,7 +17,7 @@ module.exports = {
     {
       type: "category",
       label: "Applications",
-      items: ["applications/telegram-gatekeeper"],
+      items: ["applications/telegram-gatekeeper", "applications/github-donations"],
     },
   ],
 };
