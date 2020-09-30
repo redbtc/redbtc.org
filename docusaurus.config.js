@@ -35,7 +35,7 @@ module.exports = {
           position: "left",
         },
         {
-          href: "https://donate.alexkaul.com/redbtc",
+          href: "https://mynode.redbtc.org/gh-donate",
           label: "Donate 💝",
           position: "right",
         },
@@ -76,7 +76,7 @@ module.exports = {
           title: "More",
           items: [
             {
-              html: `<a href="https://donate.alexkaul.com/redbtc" target="_blank" rel="noopener noreferrer" class="footer__link-item">Donate<span class="link-icon">💝</span></a>`,
+              html: `<a href="https://mynode.redbtc.org/gh-donate" target="_blank" rel="noopener noreferrer" class="footer__link-item">Donate<span class="link-icon">💝</span></a>`,
             },
             {
               label: "Twitter",
