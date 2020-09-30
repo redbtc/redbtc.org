@@ -13,7 +13,7 @@ The "Invoice URL" node outputs the url of the new invoice to Debug window.
 
 ## Node-RED Flow
 
-```json
+```
 [
   {
     "id": "c4c2c8b0.eff678",

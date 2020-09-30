@@ -33,7 +33,7 @@ This flow requires the following node to be installed on your Node-RED:
 
 ## Node-RED Flow
 
-```json
+```
 [
     {
         "id": "b90eb096.32c2f",

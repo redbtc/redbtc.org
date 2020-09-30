@@ -11,7 +11,7 @@ This flow implements a simple IPN handler. It checks if the invoice status is ei
 
 ## Node-RED Flow
 
-```json
+```
 [
   {
     "id": "104235db.a6176a",

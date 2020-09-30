@@ -111,7 +111,7 @@ A backers list can be created by combining the above-mentioned links, and placed
 
 ![GitHub Donations Flow](./assets/github-donations.png)
 
-```json
+```
 [
     {
         "id": "714cb193.73b65",

@@ -56,7 +56,7 @@ This flow requires the following nodes to be installed on your Node-RED:
 
 ## Node-RED Flow
 
-```json
+```
 [
     {
         "id": "b1c965cf.c2bff8",

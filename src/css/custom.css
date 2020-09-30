@@ -69,6 +69,6 @@
   overflow-y: scroll;
 }
 
-.flows-page main .prism-code.language-json {
+.flows-page main .prism-code.language-undefined {
   max-height: 200px;
 }
