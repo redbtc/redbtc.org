@@ -22,7 +22,7 @@ $ yarn build
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
 
-## Backers
+## Backers 💝
 
 [[Become a backer](https://mynode.redbtc.org/gh-donate)]
 
