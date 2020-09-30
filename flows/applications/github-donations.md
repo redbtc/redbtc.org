@@ -6,7 +6,7 @@ hide_table_of_contents: true
 image: /img/og-images/btcpay-github.png
 ---
 
-This flow creates a donation page enabling GitHub users to make Bitcoin donations and automatically get added to Backers lists on your GitHub repo's readme, docs and homepage.
+This flow creates a donation page where GitHub users can make Bitcoin donations and automatically get added to Backers lists on your GitHub repo's readme, docs and homepage.
 
 Other features include:
 
