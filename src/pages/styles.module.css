@@ -67,7 +67,8 @@
 
 .backerImage {
   border-radius: 50%;
-  vertical-align: middle;;
+  vertical-align: middle;
+  padding:1px;
 }
 
 .becomeBacker {
