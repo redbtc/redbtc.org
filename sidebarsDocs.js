@@ -8,7 +8,7 @@ module.exports = {
     },
     {
       type: "link",
-      href: "/flows",
+      href: "/flows/",
       label: "Example Flows",
     },
   ],
