@@ -149,8 +149,13 @@ function Home() {
             <h4 className={styles.backersTitle}>
               Backers
             </h4>
-            <div>
+            <p>
               {backers}
+            </p>
+            <p>
+              Thank you for your support! 🙌
+            </p>
+            <p>
               <Link
                 className={clsx(
                   "button button--outline button--primary",
@@ -158,9 +163,9 @@ function Home() {
                 )}
                 to="https://mynode.redbtc.org/gh-donate"
               >
-                Become a Backer
+                Donate
               </Link>
-            </div>
+            </p>
           </div>
         </section>
 
